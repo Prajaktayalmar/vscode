@@ -1,0 +1,29 @@
+import cv2
+
+# Load the images
+img1 = cv2.imread('finger1.jpg', 0)  # Query image
+img2 = cv2.imread('finger2.jpg', 0)  # Train image
+
+# ORB Detector
+orb = cv2.ORB_create()
+
+# Find the keypoints and descriptors
+kp1, des1 = orb.detectAndCompute(img1, None)
+kp2, des2 = orb.detectAndCompute(img2, None)
+
+# Brute Force Matcher with Hamming distance
+bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+
+# Match descriptors
+matches = bf.match(des1, des2)
+
+# Sort matches by distance
+matches = sorted(matches, key=lambda x: x.distance)
+
+# Draw first 10 matches
+result = cv2.drawMatches(img1, kp1, img2, kp2, matches[:10], None, flags=2)
+
+# Show result
+cv2.imshow("Matching", result)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
